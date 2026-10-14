@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import {
   ArrowRight,
   Heart,
+  MessageCircle,
   Moon,
   Search,
   ShoppingBag,
@@ -18,6 +19,9 @@ import {
 import './App.css'
 
 const categories = ['All', 'Essentials', 'Active', 'Layering', 'Streetwear']
+const paymentMethods = ['M-Pesa', 'Cash on Delivery']
+const WHATSAPP_NUMBER = '254791648289'
+const WHATSAPP_MESSAGE = encodeURIComponent('Hello HADAR MENSWEAR, I would like to chat with your team.')
 
 const products = [
   {
@@ -120,6 +124,54 @@ const products = [
 
 const formatMoney = (amount) => `KSh ${amount.toLocaleString()}`
 
+function BrandMark() {
+  return (
+    <svg className="brand-logo" viewBox="0 0 1000 500" role="img" aria-label="HADAR Menswear logo">
+      <defs>
+        <linearGradient id="goldGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+          <stop offset="0%" stopColor="#fff1bc" />
+          <stop offset="18%" stopColor="#f4d67a" />
+          <stop offset="34%" stopColor="#d9a13e" />
+          <stop offset="50%" stopColor="#f7e7a3" />
+          <stop offset="68%" stopColor="#b7771d" />
+          <stop offset="100%" stopColor="#f7e3ae" />
+        </linearGradient>
+        <linearGradient id="goldStroke" x1="0" x2="1">
+          <stop offset="0%" stopColor="#f4d784" />
+          <stop offset="50%" stopColor="#d29a37" />
+          <stop offset="100%" stopColor="#f9e8b0" />
+        </linearGradient>
+      </defs>
+
+      <circle cx="500" cy="250" r="214" fill="rgba(0,0,0,0.78)" stroke="url(#goldStroke)" strokeWidth="9" />
+      <circle cx="500" cy="250" r="200" fill="rgba(0,0,0,0.28)" stroke="rgba(235, 191, 89, 0.4)" strokeWidth="1.5" />
+
+      <g transform="translate(0 4)">
+        <path d="M330 185 L365 110 L400 185 L430 110 L470 185 L500 98 L532 185 L565 110 L605 185 L640 110 L675 185" fill="none" stroke="url(#goldGradient)" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M385 170 L420 145 L440 170 L460 140 L500 170 L540 140 L560 170 L580 145 L615 170" fill="none" stroke="url(#goldGradient)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />
+      </g>
+
+      <g transform="translate(0 8)">
+        <path d="M425 190 C455 180, 470 190, 500 210 C528 190, 548 180, 575 190 L595 220 C565 236, 530 250, 500 270 C470 250, 435 236, 405 220 Z" fill="url(#goldGradient)" opacity="0.7" />
+      </g>
+
+      <g transform="translate(0 8)">
+        <path d="M445 215 L515 215 L500 245 C490 257, 485 270, 500 290 C515 270, 510 257, 500 245 Z" fill="url(#goldGradient)" opacity="0.9" />
+        <path d="M440 192 L450 250 L470 250 L490 210 L510 250 L530 250 L540 192" fill="none" stroke="url(#goldGradient)" strokeWidth="15" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M500 160 L500 200" stroke="url(#goldGradient)" strokeWidth="12" strokeLinecap="round" />
+      </g>
+
+      <g fontFamily="Georgia, 'Times New Roman', serif" textAnchor="middle">
+        <text x="500" y="255" fontSize="150" fontWeight="700" fill="url(#goldGradient)" letterSpacing="-10">H</text>
+        <text x="500" y="355" fontSize="118" fontWeight="700" fill="url(#goldGradient)" letterSpacing="-8">HADAR</text>
+        <text x="500" y="395" fontSize="34" fontWeight="700" fill="url(#goldGradient)" letterSpacing="11">MENSWEAR</text>
+        <line x1="280" y1="410" x2="720" y2="410" stroke="url(#goldGradient)" strokeWidth="2.5" opacity="0.8" />
+        <text x="500" y="445" fontSize="16" fontWeight="600" fill="url(#goldGradient)" letterSpacing="4">STYLE • CONFIDENCE • DISTINCTION</text>
+      </g>
+    </svg>
+  )
+}
+
 function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [darkMode, setDarkMode] = useState(() => {
@@ -142,6 +194,8 @@ function ShopPage() {
   })
   const [cartOpen, setCartOpen] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [paymentMethod, setPaymentMethod] = useState('M-Pesa')
+  const [mpesaPaymentMode, setMpesaPaymentMode] = useState('full')
 
   const category = searchParams.get('category') || 'All'
   const search = searchParams.get('search') || ''
@@ -241,25 +295,49 @@ function ShopPage() {
 
   const checkoutMessage = cart.length
     ? cart.map((item) => `${item.name} x${item.quantity} - ${formatMoney(item.price * item.quantity)}`).join('%0A')
-    : 'I would like to order from SHA Fashion.'
+    : 'I would like to order from HADAR MENSWEAR.'
+
+  const mpesaDueNow = mpesaPaymentMode === 'full' ? subtotal : subtotal / 2
+  const balanceDueOnDelivery = paymentMethod === 'M-Pesa' && mpesaPaymentMode === 'half' ? subtotal - mpesaDueNow : 0
 
   const handleCheckout = () => {
-    const url = `https://wa.me/254791648289?text=${encodeURIComponent(`Hello SHA Fashion,%0A%0A${checkoutMessage}%0A%0ATotal: ${formatMoney(subtotal)}`)}`
+    const orderSummary = `Hello HADAR MENSWEAR,%0A%0A${checkoutMessage}%0A%0ATotal: ${formatMoney(subtotal)}%0APayment Method: ${paymentMethod}`
+    const message =
+      paymentMethod === 'M-Pesa'
+        ? `I would like to pay via M-Pesa for my order.%0A%0A${orderSummary}%0A%0APayment choice: ${mpesaPaymentMode === 'full' ? 'Full amount' : 'Half amount'}%0APay now: ${formatMoney(mpesaDueNow)}${mpesaPaymentMode === 'half' ? `%0ABalance due on delivery: ${formatMoney(balanceDueOnDelivery)}` : ''}%0A%0APlease share the M-Pesa Paybill/Till number or confirm the payment instructions.`
+        : `I would like to pay on delivery for my order.%0A%0A${orderSummary}`
+
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
   return (
     <div className="shop-shell min-h-screen bg-slate-100 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-50">
+      <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+        <div className="mb-4 flex flex-col items-center justify-center gap-2 rounded-full bg-slate-900 px-4 py-3 text-center text-xs font-medium text-slate-100 shadow-lg shadow-slate-900/10 md:flex-row md:text-sm">
+          <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-950">M-Pesa</span>
+          <span>Pay with mobile money</span>
+          <span className="hidden text-slate-500 md:inline">•</span>
+          <span>Cash on Delivery available</span>
+        </div>
+      </div>
+      <a
+        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`}
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Chat with us on WhatsApp"
+        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-3 rounded-full bg-[#25D366] px-4 py-3 text-sm font-semibold text-white shadow-[0_18px_45px_rgba(37,211,102,0.35)] transition hover:-translate-y-0.5"
+      >
+        <MessageCircle size={18} />
+        <span>Chat with us</span>
+      </a>
       <div className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
         <header className="mb-8 rounded-[28px] border border-slate-200/80 bg-white/70 px-4 py-3 shadow-[0_12px_40px_rgba(15,23,42,0.05)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/70">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-sm font-black text-white shadow-lg shadow-amber-500/30">
-                SHA
-              </div>
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Premium edit</p>
-                <h1 className="text-lg font-bold tracking-tight">SHA Fashion</h1>
+              <div className="select-none text-left">
+                <div className="text-lg font-black uppercase tracking-[0.22em] text-slate-900 dark:text-white">HADAR</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.45em] text-amber-600 dark:text-amber-300">Menswear</div>
               </div>
             </div>
 
@@ -573,9 +651,66 @@ function ShopPage() {
               </div>
 
               <div className="border-t border-slate-200 p-5 dark:border-slate-800">
+                <div className="mb-4">
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">Payment Method</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {paymentMethods.map((method) => (
+                      <button
+                        key={method}
+                        type="button"
+                        onClick={() => setPaymentMethod(method)}
+                        className={`rounded-full px-3 py-2 text-xs font-semibold transition ${
+                          paymentMethod === method
+                            ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                            : 'border border-slate-200 bg-white text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200'
+                        }`}
+                      >
+                        {method}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {paymentMethod === 'M-Pesa' && (
+                  <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-800/60 dark:bg-emerald-950/30">
+                    <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-700 dark:text-emerald-300">M-Pesa payment option</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setMpesaPaymentMode('full')}
+                        className={`rounded-full px-3 py-2 text-xs font-semibold transition ${
+                          mpesaPaymentMode === 'full'
+                            ? 'bg-emerald-600 text-white'
+                            : 'border border-emerald-200 bg-white text-emerald-700 dark:border-emerald-700 dark:bg-slate-800 dark:text-emerald-300'
+                        }`}
+                      >
+                        Full amount
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMpesaPaymentMode('half')}
+                        className={`rounded-full px-3 py-2 text-xs font-semibold transition ${
+                          mpesaPaymentMode === 'half'
+                            ? 'bg-emerald-600 text-white'
+                            : 'border border-emerald-200 bg-white text-emerald-700 dark:border-emerald-700 dark:bg-slate-800 dark:text-emerald-300'
+                        }`}
+                      >
+                        Half amount
+                      </button>
+                    </div>
+                    <div className="mt-3 text-xs text-emerald-800 dark:text-emerald-200">
+                      {mpesaPaymentMode === 'full'
+                        ? `Pay now: ${formatMoney(subtotal)}`
+                        : `Pay now: ${formatMoney(mpesaDueNow)} • Balance on delivery: ${formatMoney(balanceDueOnDelivery)}`}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mb-4 flex items-center justify-between text-sm">
-                  <span className="text-slate-500 dark:text-slate-400">Subtotal</span>
-                  <span className="font-semibold text-slate-900 dark:text-white">{formatMoney(subtotal)}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{paymentMethod === 'M-Pesa' ? 'Total due' : 'Subtotal'}</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">
+                    {paymentMethod === 'M-Pesa' ? formatMoney(mpesaDueNow) : formatMoney(subtotal)}
+                  </span>
                 </div>
                 <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
                   <div
@@ -588,7 +723,7 @@ function ShopPage() {
                   onClick={handleCheckout}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-500/25 transition hover:-translate-y-0.5"
                 >
-                  Checkout via WhatsApp
+                  {paymentMethod === 'M-Pesa' ? `Pay ${mpesaPaymentMode === 'full' ? 'full amount' : 'half amount'} via M-Pesa` : 'Confirm Cash on Delivery'}
                   <ArrowRight size={16} />
                 </button>
               </div>

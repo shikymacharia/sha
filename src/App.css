@@ -2,6 +2,14 @@
   min-height: 100vh;
 }
 
+.brand-logo {
+  display: block;
+  width: clamp(220px, 32vw, 460px);
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 18px rgba(236, 186, 79, 0.24));
+}
+
 .card-shimmer {
   position: relative;
   overflow: hidden;
