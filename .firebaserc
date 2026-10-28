@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "hadar-e312b"
-  }
+    "default": "hadar-e312b",
+    "SELLING": "hadar-e312b",
+    "T": "hadar-e312b"
+  },
+  "targets": {},
+  "etags": {}
 }

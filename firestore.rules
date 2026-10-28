@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Replace with your real admin email(s). Must be a verified address.
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email_verified == true
+        && request.auth.token.email in ['agnestshiku57@gmail.com'];
+    }
+    match /products/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /orders/{id} {
+      allow read: if request.auth != null && (resource.data.uid == request.auth.uid || isAdmin());
+      allow update: if isAdmin();           // e.g. change status to paid / dispatched
+      allow create, delete: if false;       // orders are created only by the placeOrder function
+    }
+  }
+}
