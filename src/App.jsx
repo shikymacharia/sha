@@ -231,7 +231,6 @@ function ShopPage() {
 
   return (
     <>
-      <div className="topbar"><b>M-Pesa</b> accepted &nbsp;·&nbsp; Cash on delivery &nbsp;·&nbsp; Free shipping over {money(FREE_SHIPPING_AT)}</div>
       <header className="header"><div className="wrap">
         <a className="brand" href={import.meta.env.VITE_PREVIEW ? '#/shop' : '/shop'} aria-label="HADAR Menswear home">
           <img src="/logo.webp" alt="" width="48" height="48" />
