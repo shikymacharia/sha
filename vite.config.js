@@ -8,4 +8,15 @@ const stub = fileURLToPath(new URL('./src/preview-stub.js', import.meta.url))
 const alias = process.env.PREVIEW
   ? Object.fromEntries(['app', 'auth', 'firestore', 'functions'].map((m) => [`firebase/${m}`, stub]))
   : {}
-export default defineConfig({ plugins: [react(), tailwindcss()], resolve: { alias } })
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: { alias },
+  build: {
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        admin: fileURLToPath(new URL('./admin.html', import.meta.url)),
+      },
+    },
+  },
+})

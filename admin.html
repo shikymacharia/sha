@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HADAR Admin</title>
+    <meta name="description" content="Admin dashboard for HADAR Menswear" />
+    <meta name="theme-color" content="#070605" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+  </head>
+  <body>
+    <noscript>
+      <p>JavaScript is required to open the admin dashboard.</p>
+    </noscript>
+    <script>
+      const base = window.location.origin + window.location.pathname.replace(/\/admin\.html$/, '');
+      const target = `${base}/#/admin`;
+      window.location.replace(target);
+    </script>
+    <p>Redirecting to the admin dashboard…</p>
+    <p><a href="/#/admin">Open admin dashboard</a></p>
+  </body>
+</html>
